@@ -121,6 +121,7 @@ public class IntegrateTest {
 
     @Test
     public void doIt() throws InterruptedException {
+        logger.info("doIt started");
         final SyncBar bar = new SyncBar(NUM_QUEUES, QUEUE_CAPACITY, Integer.MIN_VALUE);
         ExecutorService pool = Executors.newCachedThreadPool();
         CountDownLatch latch = new CountDownLatch(NUM_QUEUES);
