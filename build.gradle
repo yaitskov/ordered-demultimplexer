@@ -22,3 +22,8 @@ task classicFibo(type: JavaExec, dependsOn: build) {
     jvmArgs "-Xss1m", "-XX:NewSize=392M", "-XX:+UseConcMarkSweepGC"
     classpath sourceSets.main.runtimeClasspath
 }
+
+
+test {
+    testLogging.showStandardStreams = true
+}

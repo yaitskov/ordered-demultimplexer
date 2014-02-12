@@ -24,105 +24,11 @@ public class IntegrateTest {
     public static final int NUM_THREADS = 1;
     public static final int IN_QUEUE_CAPACITY = 1000;
 
-    private static class IdMessage implements Message {
-        private final int id;
-
-        private IdMessage(int id) {
-            this.id = id;
-        }
-
-        public int getId() {
-            return id;
-        }
-    }
-
-    private static class IdHandler implements Handler {
-        private final int maxMessages;
-        private final CountDownLatch latch;
-        private int gotMessages;
-        private final int queueId;
-        private Message previous;
-        private volatile int numIllOrderedMessages;
-
-        private IdHandler(CountDownLatch latch, int maxMessages,
-                          int queueId, int numQueues)
-        {
-            this.latch = latch;
-            this.maxMessages = maxMessages / numQueues
-                    + maxMessages % numQueues > queueId ? 1 : 0;
-            this.queueId = queueId;
-        }
-
-        public void pass(Message message) {
-            if (previous == null) {
-                previous = message;
-            } else if (previous.getId() >= message.getId()) {
-                logger.error("queue id {} bad order");
-                ++numIllOrderedMessages;
-            } else {
-                previous = message;
-            }
-            if (++gotMessages == maxMessages) {
-                logger.info("end queue id {}", queueId);
-                latch.countDown();
-            } else if (gotMessages > maxMessages) {
-                logger.error("overflow");
-            }
-        }
-
-        public int getNumIllOrderedMessages() {
-            return numIllOrderedMessages;
-        }
-    }
-
-    private static class Parallel implements Runnable {
-        private final BlockingQueue<Integer> in;
-        private final SyncBar bar;
-        private final int numQueues;
-
-        public Parallel(BlockingQueue<Integer> in, SyncBar bar, int numQueues) {
-            this.in = in;
-            this.bar = bar;
-            this.numQueues = numQueues;
-        }
-
-        public void run() {
-            try {
-                while (true) {
-                    int id = in.take();
-                    for (int i = 0; i < Integer.MAX_VALUE; ++i);
-                    bar.put(new IdMessage(id), id % numQueues);
-                }
-            } catch (InterruptedException e) {
-                logger.info("parallel interrupted");
-            }
-        }
-    }
-
-    private static class InFiller implements Runnable {
-        private final BlockingQueue<Integer> in;
-        private final int nMessages;
-
-        public InFiller(BlockingQueue<Integer> in, int nMessages) {
-            this.in = in;
-            this.nMessages = nMessages;
-        }
-
-        public void run() {
-            logger.info("in filter started");
-            for (int i = 0; i < nMessages; ++i) {
-                if (!in.offer(i)) {
-                    logger.info("in filter lost message {}", i);
-                }
-            }
-            logger.info("in filter ended");
-        }
-    }
-
     @Test
     public void doIt() throws InterruptedException {
-        logger.info("doIt started");
-        final SyncBar bar = new SyncBar(NUM_QUEUES, QUEUE_CAPACITY, Integer.MIN_VALUE);
+        logger.info("doIt started; max messages {}", N_MESSAGES);
+        final SyncBar bar = new SyncBar(NUM_QUEUES, NUM_THREADS,
+                QUEUE_CAPACITY, Integer.MIN_VALUE);
         ExecutorService pool = Executors.newCachedThreadPool();
         CountDownLatch latch = new CountDownLatch(NUM_QUEUES);
         List<IdHandler> handlers = new ArrayList<IdHandler>();
@@ -133,13 +39,13 @@ public class IntegrateTest {
         }
         BlockingQueue<Integer> in = new ArrayBlockingQueue<Integer>(IN_QUEUE_CAPACITY);
         for (int i = 0; i < NUM_THREADS; ++i) {
-            pool.submit(new Parallel(in, bar, NUM_QUEUES));
+            pool.submit(new Parallel(in, bar, NUM_QUEUES, i));
         }
         pool.submit(new InFiller(in, N_MESSAGES));
         latch.await();
         logger.info("All messages arrived. Checking...");
         for (IdHandler handler : handlers) {
-            Assert.assertEquals(0, handler.getNumIllOrderedMessages());
+            Assert.assertEquals(0, handler.getNumProblems());
         }
         pool.shutdown();
     }

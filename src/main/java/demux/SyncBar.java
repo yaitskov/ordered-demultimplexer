@@ -11,64 +11,73 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  */
 public class SyncBar {
     private static final Logger logger = LoggerFactory.getLogger(SyncBar.class);
-    private final AtomicIntegerArray lastIds;
-    private final AtomicReferenceArray<Object> locks;
+    /**
+     * numbers of last message ids threads put into their queues.
+     */
+    private final AtomicIntegerArray lastMsgIds;
+    private final AtomicReferenceArray<Object> queueLocks;
+    private final AtomicReferenceArray<Object> threadLocks;
     private final AtomicReferenceArray<PriorityQueue<Message>> queues;
     private final int emptyValue;
 
-    public SyncBar(int numQueues, int queueCapacity, int emptyValue) {
-        queues = new AtomicReferenceArray<PriorityQueue<Message>>(numQueues);
-        lastIds = new AtomicIntegerArray(queues.length());
-        locks = new AtomicReferenceArray<Object>(lastIds.length());
+    public SyncBar(int numQueues, int numThreads,
+                   int queueCapacity, int emptyValue)
+    {
         this.emptyValue = emptyValue;
-        for (int i = 0; i < lastIds.length(); ++i) {
+        queues = new AtomicReferenceArray<PriorityQueue<Message>>(numQueues);
+        queueLocks = new AtomicReferenceArray<Object>(numQueues);
+        for (int i = 0; i < numQueues; ++i) {
+            queueLocks.set(i, new Object());
             queues.set(i, new PriorityQueue<Message>(queueCapacity));
-            locks.set(i, new Object());
-            lastIds.set(i, emptyValue);
+        }
+        lastMsgIds = new AtomicIntegerArray(numThreads);
+        threadLocks = new AtomicReferenceArray<Object>(numThreads);
+        for (int i = 0; i < numThreads; ++i) {
+            threadLocks.set(i, new Object());
+            lastMsgIds.set(i, emptyValue);
         }
     }
 
-    public int length() {
-        return lastIds.length();
+    public void put(Message message, int threadIndex, int queueIndex) {
+        if (message.getId() == emptyValue) {
+            logger.error("queue {} thread {} put emptyValue",
+                    queueIndex, threadIndex);
+            return;
+        }
+        Object threadLock = threadLocks.get(threadIndex);
+        synchronized (threadLock) {
+            Object queueLock = queueLocks.get(queueIndex);
+            synchronized (queueLock) {
+                if (queues.get(queueIndex).offer(message)) {
+                    queueLock.notifyAll();
+                } else {
+                    logger.warn("lost message {} on queue {}",
+                            message.getId(), queueIndex);
+                }
+            }
+            lastMsgIds.set(threadIndex, message.getId());
+            threadLock.notifyAll();
+        }
     }
 
-    public void waitNotLess(int index, int id) {
-        if (lastIds.get(index) < id) {
-            Object lock = locks.get(index);
-            synchronized (lock) {
-                int cid;
-                while ((cid = lastIds.get(index)) < id && cid != emptyValue) {
-                    try {
+    public void ensureIdIsMax(int msgId, int queueIndex) throws InterruptedException {
+        for (int i = 0; i < lastMsgIds.length(); ++i) {
+            int id = lastMsgIds.get(i);
+            if (id < msgId || id == emptyValue) {
+                Object lock = threadLocks.get(i);
+                synchronized (lock) {
+                    while (lastMsgIds.get(i) < msgId) {
                         lock.wait();
-                    } catch (InterruptedException e) {
-                        logger.info("interruption ignored; index {}; id {}",
-                                index, id);
                     }
                 }
             }
         }
     }
 
-    public void put(Message message, int index) {
-        if (message.getId() == emptyValue) {
-            logger.error("index {} got emptyValue {}", index, emptyValue);
-        }
-        Object lock = locks.get(index);
+    public Message takeOrWait(int queueIndex) throws InterruptedException {
+        Object lock = queueLocks.get(queueIndex);
         synchronized (lock) {
-            if (queues.get(index).offer(message)) {
-                lastIds.set(index, message.getId());
-                lock.notifyAll();
-            } else {
-                logger.warn("lost message {} on queue {}",
-                        message.getId(), index);
-            }
-        }
-    }
-
-    public Message take(int index) throws InterruptedException {
-        Object lock = locks.get(index);
-        synchronized (lock) {
-            PriorityQueue<Message> queue = queues.get(index);
+            PriorityQueue<Message> queue = queues.get(queueIndex);
             Message result;
             while (true) {
                 result = queue.poll();
@@ -81,10 +90,10 @@ public class SyncBar {
         }
     }
 
-    public Message poll(int index) {
-        Object lock = locks.get(index);
+    public Message poll(int queueIndex) {
+        Object lock = queueLocks.get(queueIndex);
         synchronized (lock) {
-            return queues.get(index).poll();
+            return queues.get(queueIndex).poll();
         }
     }
 }

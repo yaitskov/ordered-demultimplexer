@@ -8,47 +8,48 @@ import org.slf4j.LoggerFactory;
 public class OrderMultiplexer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(OrderMultiplexer.class);
     private final Handler handler;
-    private final int myIndex;
+    private final int queueIndex;
     private final SyncBar bar;
 
     public OrderMultiplexer(Handler handler,
-                            int myIndex,
+                            int queueIndex,
                             SyncBar bar)
     {
         this.handler = handler;
-        this.myIndex = myIndex;
+        this.queueIndex = queueIndex;
         this.bar = bar;
     }
 
     @Override
     public void run() {
         Message msg;
-        s1:
         while (true) {
             try {
-                msg = bar.take(myIndex);
+                msg = bar.takeOrWait(queueIndex);
             } catch (InterruptedException e) {
-                logger.info("interrupted index {}", myIndex);
+                logger.info("interrupted queue index {}", queueIndex);
                 break;
             }
-            s2:
+            int msgId = msg.getId();
             while (true) {
-                int myId = msg.getId();
-                for (int i = 0; i < bar.length(); ++i) {
-                    bar.waitNotLess(i, myId);
+                try {
+                    bar.ensureIdIsMax(msgId, queueIndex);
+                } catch (InterruptedException e) {
+                    logger.info("ignore interrupted queue index {}", queueIndex);
+                    continue;
                 }
-                Message next = bar.poll(myIndex);
-                while (next != null) {
-                    if (next.getId() < myId) {
+                Message next;
+                while ((next = bar.poll(queueIndex)) != null) {
+                    if (next.getId() < msgId) {
                         handler.pass(next);
                     } else {
                         handler.pass(msg);
                         msg = next;
-                        continue s2;
+                        break;
                     }
                 }
                 handler.pass(msg);
-                continue s1;
+                break;
             }
         }
     }
