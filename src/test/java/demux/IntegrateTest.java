@@ -19,9 +19,9 @@ public class IntegrateTest {
     private static final Logger logger = LoggerFactory.getLogger(IntegrateTest.class);
 
     public static final int QUEUE_CAPACITY = 1000;
-    public static final int N_MESSAGES = 10;
-    public static final int NUM_QUEUES = 2;
-    public static final int NUM_THREADS = 1;
+    public static final int N_MESSAGES = 3;
+    public static final int NUM_QUEUES = 1;
+    public static final int NUM_THREADS = 2;
     public static final int IN_QUEUE_CAPACITY = 1000;
 
     @Test
