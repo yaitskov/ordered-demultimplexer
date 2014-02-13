@@ -44,56 +44,78 @@ public class SyncBar {
                     queueIndex, threadIndex);
             return;
         }
-        Object threadLock = threadLocks.get(threadIndex);
-        synchronized (threadLock) {
-            Object queueLock = queueLocks.get(queueIndex);
-            synchronized (queueLock) {
-                if (queues.get(queueIndex).offer(message)) {
-                    queueLock.notifyAll();
-                } else {
-                    logger.warn("lost message {} on queue {}",
-                            message.getId(), queueIndex);
-                }
+        logger.debug("put {} before queue lock {}", message.getId(), queueIndex);
+        Object queueLock = queueLocks.get(queueIndex);
+        synchronized (queueLock) {
+            if (queues.get(queueIndex).offer(message)) {
+                queueLock.notifyAll();
+            } else {
+                logger.warn("lost message {} on queue {}",
+                        message.getId(), queueIndex);
             }
+        }
+        logger.debug("put {} after queue lock {}", message.getId(), queueIndex);
+        Object threadLock = threadLocks.get(threadIndex);
+        logger.debug("put {} before thread lock {}", message.getId(), threadIndex);
+        synchronized (threadLock) {
             lastMsgIds.set(threadIndex, message.getId());
             threadLock.notifyAll();
         }
+        logger.debug("put {} after thread lock {}", message.getId(), threadIndex);
     }
 
-    public void ensureIdIsMax(int msgId, int queueIndex) throws InterruptedException {
+    public void ensureIdIsMax(int msgId) throws InterruptedException {
         for (int i = 0; i < lastMsgIds.length(); ++i) {
             int id = lastMsgIds.get(i);
-            if (id < msgId || id == emptyValue) {
+            if (id < msgId && id != emptyValue) {
                 Object lock = threadLocks.get(i);
+                logger.debug("ensure {} before thread lock {}", msgId, i);
                 synchronized (lock) {
                     while (lastMsgIds.get(i) < msgId) {
+                        logger.debug("ensure wait thread lock {} "
+                                + "cause " + lastMsgIds.get(i) + " < " + msgId, i);
                         lock.wait();
                     }
                 }
+                logger.debug("ensure {} after thread lock {}", msgId, i);
             }
         }
     }
 
     public Message takeOrWait(int queueIndex) throws InterruptedException {
         Object lock = queueLocks.get(queueIndex);
-        synchronized (lock) {
-            PriorityQueue<Message> queue = queues.get(queueIndex);
-            Message result;
-            while (true) {
-                result = queue.poll();
-                if (result == null) {
-                    lock.wait();
-                } else {
-                    return result;
+        logger.debug("takeOrWait before queue lock {}", queueIndex);
+        Message result = null;
+        try {
+            synchronized (lock) {
+                PriorityQueue<Message> queue = queues.get(queueIndex);
+                while (true) {
+                    result = queue.poll();
+                    if (result == null) {
+                        logger.debug("takeOrWait wait queue lock {}", queueIndex);
+                        lock.wait();
+                    } else {
+                        return result;
+                    }
                 }
             }
+        } finally {
+            logger.debug("takeOrWait {} after queue lock {}", result.getId(), queueIndex);
         }
     }
 
     public Message poll(int queueIndex) {
         Object lock = queueLocks.get(queueIndex);
-        synchronized (lock) {
-            return queues.get(queueIndex).poll();
+        Message result = null;
+        logger.debug("poll before queue lock {}", queueIndex);
+        try {
+            synchronized (lock) {
+                result = queues.get(queueIndex).poll();
+                return result;
+            }
+        } finally {
+            logger.debug("poll {} after queue lock {}",
+                    result == null ? "null" : result.getId(), queueIndex);
         }
     }
 }

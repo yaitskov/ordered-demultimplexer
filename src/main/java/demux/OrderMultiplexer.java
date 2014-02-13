@@ -33,7 +33,7 @@ public class OrderMultiplexer implements Runnable {
             int msgId = msg.getId();
             while (true) {
                 try {
-                    bar.ensureIdIsMax(msgId, queueIndex);
+                    bar.ensureIdIsMax(msgId);
                 } catch (InterruptedException e) {
                     logger.info("ignore interrupted queue index {}", queueIndex);
                     continue;
