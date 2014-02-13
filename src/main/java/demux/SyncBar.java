@@ -15,15 +15,12 @@ public class SyncBar {
      * numbers of last message ids threads put into their queues.
      */
     private final AtomicIntegerArray lastMsgIds;
+    private final AtomicReferenceArray<ParallelThreadStatus> threadStatuses;
     private final AtomicReferenceArray<Object> queueLocks;
     private final AtomicReferenceArray<Object> threadLocks;
     private final AtomicReferenceArray<PriorityQueue<Message>> queues;
-    private final int emptyValue;
 
-    public SyncBar(int numQueues, int numThreads,
-                   int queueCapacity, int emptyValue)
-    {
-        this.emptyValue = emptyValue;
+    public SyncBar(int numQueues, int numThreads, int queueCapacity) {
         queues = new AtomicReferenceArray<PriorityQueue<Message>>(numQueues);
         queueLocks = new AtomicReferenceArray<Object>(numQueues);
         for (int i = 0; i < numQueues; ++i) {
@@ -32,18 +29,14 @@ public class SyncBar {
         }
         lastMsgIds = new AtomicIntegerArray(numThreads);
         threadLocks = new AtomicReferenceArray<Object>(numThreads);
+        threadStatuses = new AtomicReferenceArray<ParallelThreadStatus>(numThreads);
         for (int i = 0; i < numThreads; ++i) {
             threadLocks.set(i, new Object());
-            lastMsgIds.set(i, emptyValue);
+            threadStatuses.set(i, ParallelThreadStatus.SLEEP);
         }
     }
 
     public void put(Message message, int threadIndex, int queueIndex) {
-        if (message.getId() == emptyValue) {
-            logger.error("queue {} thread {} put emptyValue",
-                    queueIndex, threadIndex);
-            return;
-        }
         logger.debug("put {} before queue lock {}", message.getId(), queueIndex);
         Object queueLock = queueLocks.get(queueIndex);
         synchronized (queueLock) {
@@ -67,11 +60,13 @@ public class SyncBar {
     public void ensureIdIsMax(int msgId) throws InterruptedException {
         for (int i = 0; i < lastMsgIds.length(); ++i) {
             int id = lastMsgIds.get(i);
-            if (id < msgId - 1 && id != emptyValue) {
+            if (id < msgId - 1
+                    && threadStatuses.get(i) == ParallelThreadStatus.RUNNING) {
                 Object lock = threadLocks.get(i);
                 logger.debug("ensure {} before thread lock {}", msgId, i);
                 synchronized (lock) {
-                    while (lastMsgIds.get(i) < msgId - 1) {
+                    while (lastMsgIds.get(i) < msgId - 1
+                            && threadStatuses.get(i) == ParallelThreadStatus.RUNNING) {
                         logger.debug("ensure wait thread lock {} "
                                 + "cause " + lastMsgIds.get(i)
                                 + " < " + msgId, i);
@@ -101,7 +96,8 @@ public class SyncBar {
                 }
             }
         } finally {
-            logger.debug("takeOrWait {} after queue lock {}", result.getId(), queueIndex);
+            logger.debug("takeOrWait {} after queue lock {}",
+                    result.getId(), queueIndex);
         }
     }
 
@@ -117,6 +113,15 @@ public class SyncBar {
         } finally {
             logger.debug("poll {} after queue lock {}",
                     result == null ? "null" : result.getId(), queueIndex);
+        }
+    }
+    
+    public void setThreadFlag(int threadIndex, ParallelThreadStatus status) {
+        Object lock = threadLocks.get(threadIndex);
+        synchronized (lock) {
+            threadStatuses.set(threadIndex, status);
+            logger.debug("thread {} is in {} status", threadIndex, status);
+            lock.notifyAll();
         }
     }
 }

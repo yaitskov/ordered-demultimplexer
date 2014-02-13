@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
 */
@@ -25,8 +26,13 @@ public class Parallel implements Runnable {
 
     public void run() {
         try {
+            bar.setThreadFlag(threadNum, ParallelThreadStatus.RUNNING);
             while (true) {
-                int id = in.take();
+                Integer id = in.poll();
+                if (id == null) {
+                    bar.setThreadFlag(threadNum, ParallelThreadStatus.SLEEP);
+                    id = in.take();
+                }
                 for (int i = 0; i < Integer.MAX_VALUE; ++i);
                 int queueId = id % numQueues;
                 logger.info("put msg {} to queue {}", id, queueId);
