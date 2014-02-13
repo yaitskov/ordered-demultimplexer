@@ -67,13 +67,14 @@ public class SyncBar {
     public void ensureIdIsMax(int msgId) throws InterruptedException {
         for (int i = 0; i < lastMsgIds.length(); ++i) {
             int id = lastMsgIds.get(i);
-            if (id < msgId && id != emptyValue) {
+            if (id < msgId - 1 && id != emptyValue) {
                 Object lock = threadLocks.get(i);
                 logger.debug("ensure {} before thread lock {}", msgId, i);
                 synchronized (lock) {
-                    while (lastMsgIds.get(i) < msgId) {
+                    while (lastMsgIds.get(i) < msgId - 1) {
                         logger.debug("ensure wait thread lock {} "
-                                + "cause " + lastMsgIds.get(i) + " < " + msgId, i);
+                                + "cause " + lastMsgIds.get(i)
+                                + " < " + msgId, i);
                         lock.wait();
                     }
                 }
