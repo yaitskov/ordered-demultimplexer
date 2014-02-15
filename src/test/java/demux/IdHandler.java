@@ -32,7 +32,8 @@ public class IdHandler implements Handler {
         if (previous == null) {
             previous = message;
         } else if (previous.getId() >= message.getId()) {
-            logger.error("queue id {} bad order");
+            logger.error("queue id {} bad order {} >= {}",
+                    new Object[] {queueId, previous.getId(), message.getId()});
             ++numProblems;
         } else {
             previous = message;
