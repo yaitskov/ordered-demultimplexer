@@ -24,8 +24,8 @@ public abstract class Parallel<T> implements Runnable {
             while (true) {
                 createAndEmitMessage();
             }
-        } catch (InterruptedException e) {
-            logger.info("thread {} interrupted {}", threadNum, e);
+        } catch (Throwable e) {
+            logger.info("thread {} interrupted", threadNum, e);
         } finally {
             bar.setThreadFlag(threadNum, ParallelThreadStatus.SLEEP);
             logger.info("thread {} ending", threadNum);
@@ -38,16 +38,20 @@ public abstract class Parallel<T> implements Runnable {
         while (true) {
             T message = in.poll();
             if (message == null) {
+                logger.info("not message for thread {}", threadNum);
                 bar.setThreadFlag(threadNum, ParallelThreadStatus.SLEEP);
                 in.waitPut();
+                logger.info("thread {} check for new message", threadNum);
                 bar.setThreadFlag(threadNum, ParallelThreadStatus.RUNNING);
             } else {
+                logger.info("message {} polled in thread {}", message, threadNum);
                 return message;
             }
         }
     }
 
     protected void put(Message message, int queueId) {
+        logger.info("put {} to bar at thread {}", message, threadNum);
         bar.put(message, threadNum, queueId);
     }
 }
