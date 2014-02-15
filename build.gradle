@@ -15,15 +15,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
-
 task classicFibo(type: JavaExec, dependsOn: build) {
     main = 'fibo.MainFibonacci'
     args = [ '43' ]
     jvmArgs "-Xss1m", "-XX:NewSize=392M", "-XX:+UseConcMarkSweepGC"
     classpath sourceSets.main.runtimeClasspath
-}
-
-
-test {
-    testLogging.showStandardStreams = true
 }
