@@ -12,4 +12,9 @@ public class IdMessage implements Message {
     public int getId() {
         return id;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }
