@@ -3,6 +3,7 @@ package demux;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -23,9 +24,10 @@ public class SyncBar {
     public SyncBar(int numQueues, int numThreads, int queueCapacity) {
         queues = new AtomicReferenceArray<PriorityQueue<Message>>(numQueues);
         queueLocks = new AtomicReferenceArray<Object>(numQueues);
+        Comparator<Message> comparator = new MessageComparator();
         for (int i = 0; i < numQueues; ++i) {
             queueLocks.set(i, new Object());
-            queues.set(i, new PriorityQueue<Message>(queueCapacity));
+            queues.set(i, new PriorityQueue<Message>(queueCapacity, comparator));
         }
         lastMsgIds = new AtomicIntegerArray(numThreads);
         threadLocks = new AtomicReferenceArray<Object>(numThreads);
