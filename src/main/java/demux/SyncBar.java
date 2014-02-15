@@ -65,17 +65,16 @@ public class SyncBar {
             if (id < msgId - 1
                     && threadStatuses.get(i) == ParallelThreadStatus.RUNNING) {
                 Object lock = threadLocks.get(i);
-                logger.debug("ensure {} before thread lock {}", msgId, i);
+                logger.debug("{} before thread lock {}", msgId, i);
                 synchronized (lock) {
                     while (lastMsgIds.get(i) < msgId - 1
                             && threadStatuses.get(i) == ParallelThreadStatus.RUNNING) {
-                        logger.debug("ensure wait thread lock {} "
-                                + "cause " + lastMsgIds.get(i)
-                                + " < " + msgId, i);
+                        logger.debug("wait thread lock {} cause {} < {}",
+                                lastMsgIds.get(i), msgId, i);
                         lock.wait();
                     }
                 }
-                logger.debug("ensure {} after thread lock {}", msgId, i);
+                logger.debug("{} after thread lock {}", msgId, i);
             }
         }
     }
