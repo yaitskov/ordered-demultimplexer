@@ -16,7 +16,9 @@ public class WaitPutQueueImpl<T> implements WaitPutQueue<T> {
     @Override
     public void waitPut() throws InterruptedException {
         synchronized (lock) {
-            lock.wait();
+            if (queue.isEmpty()) {
+                lock.wait();
+            }
         }
     }
 
