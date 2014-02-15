@@ -122,8 +122,19 @@ public class SyncBar {
         Object lock = threadLocks.get(threadIndex);
         synchronized (lock) {
             threadStatuses.set(threadIndex, status);
-            logger.debug("thread {} is in {} status", threadIndex, status);
-            lock.notifyAll();
+            switch (status) {
+                case RUNNING:
+                    logger.debug("thread {} is in woken",
+                            threadIndex);
+                    break;
+                case SLEEP:
+                    lock.notifyAll();
+                    logger.debug("thread {} is in slept; {}",
+                            threadIndex, lastMsgIds.get(threadIndex));
+                    break;
+                default:
+                    throw new IllegalStateException("unsupported " + status);
+            }
         }
     }
 }
