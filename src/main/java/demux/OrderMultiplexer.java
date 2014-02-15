@@ -28,6 +28,7 @@ public class OrderMultiplexer implements Runnable {
                 break;
             }
             int msgId = msg.getId();
+            recheck:
             while (true) {
                 try {
                     bar.ensureIdIsMax(msgId);
@@ -42,7 +43,8 @@ public class OrderMultiplexer implements Runnable {
                     } else {
                         handler.pass(msg);
                         msg = next;
-                        break;
+                        msgId = msg.getId();
+                        continue recheck;
                     }
                 }
                 handler.pass(msg);
