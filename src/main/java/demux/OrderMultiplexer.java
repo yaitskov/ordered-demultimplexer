@@ -11,10 +11,7 @@ public class OrderMultiplexer implements Runnable {
     private final int queueIndex;
     private final SyncBar bar;
 
-    public OrderMultiplexer(Handler handler,
-                            int queueIndex,
-                            SyncBar bar)
-    {
+    public OrderMultiplexer(Handler handler, int queueIndex, SyncBar bar) {
         this.handler = handler;
         this.queueIndex = queueIndex;
         this.bar = bar;
