@@ -27,6 +27,7 @@ public abstract class Parallel<T> implements Runnable {
         } catch (InterruptedException e) {
             logger.info("thread {} interrupted {}", threadNum, e);
         } finally {
+            bar.setThreadFlag(threadNum, ParallelThreadStatus.SLEEP);
             logger.info("thread {} ending", threadNum);
         }
     }
