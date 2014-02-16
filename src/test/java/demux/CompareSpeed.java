@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  */
-public class SpeedTest {
-    private static final Logger logger = LoggerFactory.getLogger(SpeedTest.class);
+public class CompareSpeed {
+    private static final Logger logger = LoggerFactory.getLogger(CompareSpeed.class);
     @Test
     public void one() {
         logger.info("one");
