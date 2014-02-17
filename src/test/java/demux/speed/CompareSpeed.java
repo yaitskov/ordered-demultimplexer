@@ -8,7 +8,6 @@ import demux.SyncBar;
 import demux.WaitPutQueue;
 import demux.WaitPutQueueImpl;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
@@ -16,14 +15,11 @@ import org.junit.Test;
 import org.perf4j.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xerial.snappy.Snappy;
 
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -207,7 +203,7 @@ public class CompareSpeed {
                 String.format(
                         "threads %3d; unit duration: %4.4f msb; max %8d; impl %10s; time %s",
                         numThreads,
-                        (double)time.getElapsedTime() / (double)NUMBER_MESSAGES,
+                        (double) time.getElapsedTime() / (double) NUMBER_MESSAGES,
                         max,
                         testFactory.getName(),
                         periodFormatter.print(new Period(time.getElapsedTime()))));
