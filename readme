@@ -1,0 +1,114 @@
+available CPU cores 8
+compare with strait single threaded sequential processing
+threads   1; unit duration: 0.0013 ms; max     1000; impl     single; time 5ms 
+threads   1; unit duration: 0.0183 ms; max     1000; impl      demux; time 73ms 
+threads   2; unit duration: 0.0005 ms; max     1000; impl     single; time 2ms 
+threads   2; unit duration: 0.0128 ms; max     1000; impl      demux; time 51ms 
+threads   3; unit duration: 0.0015 ms; max     1000; impl     single; time 6ms 
+threads   3; unit duration: 0.0078 ms; max     1000; impl      demux; time 31ms 
+threads   4; unit duration: 0.0015 ms; max     1000; impl     single; time 6ms 
+threads   4; unit duration: 0.0078 ms; max     1000; impl      demux; time 31ms 
+threads   5; unit duration: 0.0005 ms; max     1000; impl     single; time 2ms 
+threads   5; unit duration: 0.0025 ms; max     1000; impl      demux; time 10ms 
+threads   6; unit duration: 0.0015 ms; max     1000; impl     single; time 6ms 
+threads   6; unit duration: 0.0020 ms; max     1000; impl      demux; time 8ms 
+threads   7; unit duration: 0.0015 ms; max     1000; impl     single; time 6ms 
+threads   7; unit duration: 0.0050 ms; max     1000; impl      demux; time 20ms 
+threads   1; unit duration: 0.0025 ms; max     2000; impl     single; time 10ms 
+threads   1; unit duration: 0.0055 ms; max     2000; impl      demux; time 22ms 
+threads   2; unit duration: 0.0018 ms; max     2000; impl     single; time 7ms 
+threads   2; unit duration: 0.0018 ms; max     2000; impl      demux; time 7ms 
+threads   3; unit duration: 0.0018 ms; max     2000; impl     single; time 7ms 
+threads   3; unit duration: 0.0018 ms; max     2000; impl      demux; time 7ms 
+threads   4; unit duration: 0.0018 ms; max     2000; impl     single; time 7ms 
+threads   4; unit duration: 0.0020 ms; max     2000; impl      demux; time 8ms 
+threads   5; unit duration: 0.0018 ms; max     2000; impl     single; time 7ms 
+threads   5; unit duration: 0.0015 ms; max     2000; impl      demux; time 6ms 
+threads   6; unit duration: 0.0018 ms; max     2000; impl     single; time 7ms 
+threads   6; unit duration: 0.0023 ms; max     2000; impl      demux; time 9ms 
+threads   7; unit duration: 0.0018 ms; max     2000; impl     single; time 7ms 
+threads   7; unit duration: 0.0028 ms; max     2000; impl      demux; time 11ms 
+threads   1; unit duration: 0.0043 ms; max     5000; impl     single; time 17ms 
+threads   1; unit duration: 0.0080 ms; max     5000; impl      demux; time 32ms 
+threads   2; unit duration: 0.0050 ms; max     5000; impl     single; time 20ms 
+threads   2; unit duration: 0.0038 ms; max     5000; impl      demux; time 15ms 
+threads   3; unit duration: 0.0050 ms; max     5000; impl     single; time 20ms 
+threads   3; unit duration: 0.0020 ms; max     5000; impl      demux; time 8ms 
+threads   4; unit duration: 0.0043 ms; max     5000; impl     single; time 17ms 
+threads   4; unit duration: 0.0018 ms; max     5000; impl      demux; time 7ms 
+threads   5; unit duration: 0.0050 ms; max     5000; impl     single; time 20ms 
+threads   5; unit duration: 0.0025 ms; max     5000; impl      demux; time 10ms 
+threads   6; unit duration: 0.0060 ms; max     5000; impl     single; time 24ms 
+threads   6; unit duration: 0.0025 ms; max     5000; impl      demux; time 10ms 
+threads   7; unit duration: 0.0043 ms; max     5000; impl     single; time 17ms 
+threads   7; unit duration: 0.0025 ms; max     5000; impl      demux; time 10ms 
+threads   1; unit duration: 0.0088 ms; max    10000; impl     single; time 35ms 
+threads   1; unit duration: 0.0118 ms; max    10000; impl      demux; time 47ms 
+threads   2; unit duration: 0.0093 ms; max    10000; impl     single; time 37ms 
+threads   2; unit duration: 0.0063 ms; max    10000; impl      demux; time 25ms 
+threads   3; unit duration: 0.0103 ms; max    10000; impl     single; time 41ms 
+threads   3; unit duration: 0.0035 ms; max    10000; impl      demux; time 14ms 
+threads   4; unit duration: 0.0088 ms; max    10000; impl     single; time 35ms 
+threads   4; unit duration: 0.0035 ms; max    10000; impl      demux; time 14ms 
+threads   5; unit duration: 0.0088 ms; max    10000; impl     single; time 35ms 
+threads   5; unit duration: 0.0025 ms; max    10000; impl      demux; time 10ms 
+threads   6; unit duration: 0.0088 ms; max    10000; impl     single; time 35ms 
+threads   6; unit duration: 0.0033 ms; max    10000; impl      demux; time 13ms 
+threads   7; unit duration: 0.0088 ms; max    10000; impl     single; time 35ms 
+threads   7; unit duration: 0.0025 ms; max    10000; impl      demux; time 10ms 
+threads   1; unit duration: 0.0175 ms; max    20000; impl     single; time 70ms 
+threads   1; unit duration: 0.0170 ms; max    20000; impl      demux; time 68ms 
+threads   2; unit duration: 0.0190 ms; max    20000; impl     single; time 76ms 
+threads   2; unit duration: 0.0083 ms; max    20000; impl      demux; time 33ms 
+threads   3; unit duration: 0.0185 ms; max    20000; impl     single; time 74ms 
+threads   3; unit duration: 0.0070 ms; max    20000; impl      demux; time 28ms 
+threads   4; unit duration: 0.0175 ms; max    20000; impl     single; time 70ms 
+threads   4; unit duration: 0.0043 ms; max    20000; impl      demux; time 17ms 
+threads   5; unit duration: 0.0175 ms; max    20000; impl     single; time 70ms 
+threads   5; unit duration: 0.0035 ms; max    20000; impl      demux; time 14ms 
+threads   6; unit duration: 0.0175 ms; max    20000; impl     single; time 70ms 
+threads   6; unit duration: 0.0043 ms; max    20000; impl      demux; time 17ms 
+threads   7; unit duration: 0.0175 ms; max    20000; impl     single; time 70ms 
+threads   7; unit duration: 0.0038 ms; max    20000; impl      demux; time 15ms 
+threads   1; unit duration: 0.0350 ms; max    40000; impl     single; time 140ms 
+threads   1; unit duration: 0.0275 ms; max    40000; impl      demux; time 110ms 
+threads   2; unit duration: 0.0360 ms; max    40000; impl     single; time 144ms 
+threads   2; unit duration: 0.0153 ms; max    40000; impl      demux; time 61ms 
+threads   3; unit duration: 0.0353 ms; max    40000; impl     single; time 141ms 
+threads   3; unit duration: 0.0100 ms; max    40000; impl      demux; time 40ms 
+threads   4; unit duration: 0.0350 ms; max    40000; impl     single; time 140ms 
+threads   4; unit duration: 0.0080 ms; max    40000; impl      demux; time 32ms 
+threads   5; unit duration: 0.0350 ms; max    40000; impl     single; time 140ms 
+threads   5; unit duration: 0.0060 ms; max    40000; impl      demux; time 24ms 
+threads   6; unit duration: 0.0358 ms; max    40000; impl     single; time 143ms 
+threads   6; unit duration: 0.0073 ms; max    40000; impl      demux; time 29ms 
+threads   7; unit duration: 0.0350 ms; max    40000; impl     single; time 140ms 
+threads   7; unit duration: 0.0088 ms; max    40000; impl      demux; time 35ms 
+threads   1; unit duration: 0.0528 ms; max    60000; impl     single; time 211ms 
+threads   1; unit duration: 0.0390 ms; max    60000; impl      demux; time 156ms 
+threads   2; unit duration: 0.0535 ms; max    60000; impl     single; time 214ms 
+threads   2; unit duration: 0.0200 ms; max    60000; impl      demux; time 80ms 
+threads   3; unit duration: 0.0525 ms; max    60000; impl     single; time 210ms 
+threads   3; unit duration: 0.0143 ms; max    60000; impl      demux; time 57ms 
+threads   4; unit duration: 0.0535 ms; max    60000; impl     single; time 214ms 
+threads   4; unit duration: 0.0115 ms; max    60000; impl      demux; time 46ms 
+threads   5; unit duration: 0.0535 ms; max    60000; impl     single; time 214ms 
+threads   5; unit duration: 0.0103 ms; max    60000; impl      demux; time 41ms 
+threads   6; unit duration: 0.0525 ms; max    60000; impl     single; time 210ms 
+threads   6; unit duration: 0.0088 ms; max    60000; impl      demux; time 35ms 
+threads   7; unit duration: 0.0528 ms; max    60000; impl     single; time 211ms 
+threads   7; unit duration: 0.0075 ms; max    60000; impl      demux; time 30ms 
+threads   1; unit duration: 0.9213 ms; max  1048576; impl     single; time 3s 685ms 
+threads   1; unit duration: 0.6223 ms; max  1048576; impl      demux; time 2s 489ms 
+threads   2; unit duration: 0.9253 ms; max  1048576; impl     single; time 3s 701ms 
+threads   2; unit duration: 0.3203 ms; max  1048576; impl      demux; time 1s 281ms 
+threads   3; unit duration: 0.9218 ms; max  1048576; impl     single; time 3s 687ms 
+threads   3; unit duration: 0.2190 ms; max  1048576; impl      demux; time 876ms 
+threads   4; unit duration: 0.9228 ms; max  1048576; impl     single; time 3s 691ms 
+threads   4; unit duration: 0.1673 ms; max  1048576; impl      demux; time 669ms 
+threads   5; unit duration: 0.9213 ms; max  1048576; impl     single; time 3s 685ms 
+threads   5; unit duration: 0.1360 ms; max  1048576; impl      demux; time 544ms 
+threads   6; unit duration: 0.9240 ms; max  1048576; impl     single; time 3s 696ms 
+threads   6; unit duration: 0.1165 ms; max  1048576; impl      demux; time 466ms 
+threads   7; unit duration: 0.9210 ms; max  1048576; impl     single; time 3s 684ms 
+threads   7; unit duration: 0.1008 ms; max  1048576; impl      demux; time 403ms 
