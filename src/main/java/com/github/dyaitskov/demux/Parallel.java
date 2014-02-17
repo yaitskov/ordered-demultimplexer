@@ -1,4 +1,4 @@
-package demux;
+package com.github.dyaitskov.demux;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -8,7 +8,7 @@
         </layout>
     </appender>
 
-    <logger name="demux" additivity="false">
+    <logger name="com.github.dyaitskov.demux" additivity="false">
         <level value="info" />
         <appender-ref ref="console" />
     </logger>

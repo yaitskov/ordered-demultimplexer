@@ -1,12 +1,12 @@
-package demux.speed;
+package com.github.dyaitskov.demux.speed;
 
-import demux.Handler;
-import demux.Message;
-import demux.OrderMultiplexer;
-import demux.Parallel;
-import demux.SyncBar;
-import demux.WaitPutQueue;
-import demux.WaitPutQueueImpl;
+import com.github.dyaitskov.demux.Handler;
+import com.github.dyaitskov.demux.Message;
+import com.github.dyaitskov.demux.OrderMultiplexer;
+import com.github.dyaitskov.demux.Parallel;
+import com.github.dyaitskov.demux.SyncBar;
+import com.github.dyaitskov.demux.WaitPutQueue;
+import com.github.dyaitskov.demux.WaitPutQueueImpl;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;

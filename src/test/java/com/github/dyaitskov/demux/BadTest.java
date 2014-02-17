@@ -1,4 +1,4 @@
-package demux;
+package com.github.dyaitskov.demux;
 
 
 import org.junit.Assert;
