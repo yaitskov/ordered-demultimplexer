@@ -13,9 +13,18 @@
     <properties>
         <spring.version>3.1.2.RELEASE</spring.version>
         <aspectj.version>1.7.0</aspectj.version>
+        <log4j.config>integ-log4j.xml</log4j.config>
     </properties>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/test/resources/log-config</directory>
+                <excludes>
+                    <exclude>**/*</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -33,6 +42,26 @@
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <id>override-log4j-file</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target name="override log4j file">
+                                <copy file="${project.basedir}/src/test/resources/log-config/${log4j.config}"
+                                      tofile="${project.build.testOutputDirectory}/log4j.xml"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -48,26 +77,6 @@
                                 <include>**/CompareSpeed.*</include>
                             </includes>
                         </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>1.7</version>
-                        <executions>
-                            <execution>
-                                <id>override-log4j-file</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <configuration>
-                                    <target name="override log4j file">
-                                        <copy file="${project.basedir}/src/test/resources/speed-log4j.xml"
-                                              tofile="${project.build.testOutputDirectory}/log4j.xml"/>
-                                    </target>
-                                </configuration>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
