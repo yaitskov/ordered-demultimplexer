@@ -68,6 +68,9 @@
     <profiles>
         <profile>
             <id>speed-compare-test</id>
+            <properties>
+                <log4j.config>speed-log4j.xml</log4j.config>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
