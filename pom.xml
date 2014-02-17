@@ -19,9 +19,9 @@
     <build>
         <resources>
             <resource>
-                <directory>src/test/resources/log-config</directory>
+                <directory>src/test/resources</directory>
                 <excludes>
-                    <exclude>**/*</exclude>
+                    <exclude>**/log-config/*</exclude>
                 </excludes>
             </resource>
         </resources>
@@ -76,6 +76,7 @@
                     <plugin>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
+                            <redirectTestOutputToFile>false</redirectTestOutputToFile>
                             <includes>
                                 <include>**/CompareSpeed.*</include>
                             </includes>
@@ -87,6 +88,16 @@
     </profiles>
 
     <dependencies>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+            <version>1.1.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
