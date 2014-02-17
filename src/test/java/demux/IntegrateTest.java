@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -17,28 +18,38 @@ import java.util.concurrent.Executors;
 public class IntegrateTest {
     private static final Logger logger = LoggerFactory.getLogger(IntegrateTest.class);
 
-    public static final int QUEUE_CAPACITY = 1000;
-    public static final int N_MESSAGES = 119;
-    public static final int NUM_MUL_QUEUES = 2;
-    public static final int NUM_DEM_THREADS = 4;
+    public static final int N_MESSAGES = 3000;
     public static final int IN_QUEUE_CAPACITY = 1000;
 
     @Test
     public void doIt() throws InterruptedException {
-        logger.info("doIt started; max messages {}", N_MESSAGES);
-        final SyncBar bar = new SyncBar(NUM_MUL_QUEUES, NUM_DEM_THREADS, QUEUE_CAPACITY);
+        for (int numThreads : Arrays.asList(1, 2, 3, 5, 7, 8)) {
+            for (int numQueues : Arrays.asList(1, 2, 4, 6, 8)) {
+                for (int queueSize : Arrays.asList(1000, 500, 100)) {
+                    build(numThreads, numQueues, queueSize);
+                }
+            }
+        }
+    }
+
+    void build(int numberThreads, int numberQueues, int queueCapacity)
+            throws InterruptedException
+    {
+        logger.info("started threads f{}; queues {}; queue capacity {}",
+                numberThreads, numberQueues, queueCapacity);
+        final SyncBar bar = new SyncBar(numberQueues, numberThreads, queueCapacity);
         ExecutorService pool = Executors.newCachedThreadPool();
-        CountDownLatch latch = new CountDownLatch(NUM_MUL_QUEUES);
+        CountDownLatch latch = new CountDownLatch(numberQueues);
         List<IdHandler> handlers = new ArrayList<IdHandler>();
-        for (int i = 0; i < NUM_MUL_QUEUES; ++i) {
-            IdHandler handler = new IdHandler(latch, N_MESSAGES, i, NUM_MUL_QUEUES);
+        for (int i = 0; i < numberQueues; ++i) {
+            IdHandler handler = new IdHandler(latch, N_MESSAGES, i, numberQueues);
             handlers.add(handler);
             pool.submit(new OrderMultiplexer(handler, i, bar));
         }
         WaitPutQueue<Integer> in = new WaitPutQueueImpl<Integer>(
                 new ArrayDeque<Integer>(IN_QUEUE_CAPACITY));
-        for (int thrId = 0; thrId < NUM_DEM_THREADS; ++thrId) {
-            pool.submit(new ParallelImpl(in, bar, thrId, NUM_MUL_QUEUES));
+        for (int thrId = 0; thrId < numberThreads; ++thrId) {
+            pool.submit(new ParallelImpl(in, bar, thrId, numberQueues));
         }
         pool.submit(new InFiller(in, N_MESSAGES));
         latch.await();
