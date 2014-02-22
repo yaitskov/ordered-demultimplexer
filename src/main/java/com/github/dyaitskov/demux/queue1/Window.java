@@ -14,7 +14,7 @@ public class Window {
     private int consumed;
     private int tail;
     private final int last;
-    private final int size;
+    public final int size;
     private final AtomicInteger used = new AtomicInteger();
     private volatile int base;
 
@@ -24,8 +24,12 @@ public class Window {
         this.size = size;
     }
 
-    public void insert(Job job) {
-        int index = job.id - base;
+    public int used() {
+        return used.get();
+    }
+
+    public void insert(int id, Object result) {
+        int index = id - base;
         if (index < 0) {
             logger.debug("negative id {} for base {}", index, base);
             index += size;
@@ -34,11 +38,11 @@ public class Window {
                 return;
             }
         }
-        buffer.set(index, job.input);
+        buffer.set(index, result);
     }
 
     public void newMessage() {
-        while (used.get() == last) {
+        while (used.get() == size) {
             Thread.yield();
         }
         used.incrementAndGet();
