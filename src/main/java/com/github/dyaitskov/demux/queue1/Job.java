@@ -10,4 +10,9 @@ public class Job {
         this.input = input;
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return id + ":" + input;
+    }
 }
