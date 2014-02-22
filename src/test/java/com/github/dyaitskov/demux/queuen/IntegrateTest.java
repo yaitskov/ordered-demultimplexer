@@ -1,4 +1,4 @@
-package com.github.dyaitskov.demux;
+package com.github.dyaitskov.demux.queuen;
 
 import org.junit.Assert;
 import org.junit.Test;
