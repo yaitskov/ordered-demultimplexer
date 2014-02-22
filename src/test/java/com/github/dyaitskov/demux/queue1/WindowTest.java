@@ -11,7 +11,7 @@ public class WindowTest {
     Window w = new Window(SIZE);
 
     @Test
-    void one() {
+    public void one() {
         Assert.assertEquals(0, w.used());
         Assert.assertEquals(SIZE, w.size);
         w.newMessage();
