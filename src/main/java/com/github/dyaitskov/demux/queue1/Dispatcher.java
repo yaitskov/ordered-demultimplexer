@@ -48,7 +48,7 @@ public class Dispatcher implements Runnable {
     private void insert(int i) {
         Job out = workers[i].out;
         if (out != null) {
-            window.insert(out);
+            window.insert(out.id, out.input);
             workers[i].out = null;
         }
     }
