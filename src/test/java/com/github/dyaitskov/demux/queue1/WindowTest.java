@@ -11,7 +11,7 @@ public class WindowTest {
     Window w = new Window(SIZE);
 
     @Test
-    public void one() {
+    public void insertPassAhead() {
         Assert.assertEquals(0, w.used());
         Assert.assertEquals(SIZE, w.size);
         w.newMessage();
@@ -31,6 +31,27 @@ public class WindowTest {
         Assert.assertEquals(1, w.consume());
         Assert.assertEquals(1, w.used());
         Assert.assertEquals(2, w.consume());
+        Assert.assertEquals(0, w.used());
+    }
+
+    @Test
+    public void consumeNull() {
+        w.newMessage();
+        w.newMessage();
+        Assert.assertEquals(2, w.used());
+        Assert.assertNull(w.consume());
+        Assert.assertNull(w.consume());
+        Assert.assertNull(w.consume());
+        Assert.assertEquals(2, w.used());
+        w.insert(0, 0);
+        Assert.assertEquals(0, w.consume());
+        Assert.assertNull(w.consume());
+        w.insert(1, 1);
+        Assert.assertEquals(1, w.consume());
+        Assert.assertNull(w.consume());
+        Assert.assertNull(w.consume());
+        Assert.assertNull(w.consume());
+        Assert.assertNull(w.consume());
         Assert.assertEquals(0, w.used());
     }
 }
