@@ -1,5 +1,6 @@
 package com.github.dyaitskov.demux.queue1;
 
+import org.omg.DynamicAny._DynAnyFactoryStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ public class Dispatcher implements Runnable {
     private final Window window;
     private int nextMessageId;
     private final Worker[] workers;
+    private boolean interrupted;
 
     public Dispatcher(Source source, Window window,
                       ExecutorService pool,
@@ -29,18 +31,23 @@ public class Dispatcher implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        interrupted = false;
+        while (!interrupted && !Thread.interrupted()) {
             Object input = take();
             if (input != null) {
                 submit(input);
             }
         }
+        logger.info("interrupted");
     }
 
     private Object take() {
         logger.trace("wait next message");
         try {
             return source.next();
+        } catch (InterruptedException e) {
+            interrupted = true;
+            return null;
         } catch (Throwable e) {
             logger.error("source threw", e);
             return null;
