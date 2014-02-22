@@ -31,26 +31,37 @@ public class Window {
     public void insert(int id, Object result) {
         int index = id - base;
         if (index < 0) {
-            logger.debug("negative id {} for base {}", index, base);
+            logger.debug("negative id {} for base {}.", index, base);
             index += size;
             if (index < 0) {
-                logger.error("insert id out of window");
+                logger.error("insert id out of window.");
                 return;
             }
+        } else {
+            logger.debug("insert id {} base {}.", id, base);
         }
-        buffer.set(index, result);
+        if (buffer.compareAndSet(index, null, result)) {
+            logger.debug("inserted {} at index {}.", index, result);
+        } else {
+            logger.error("index {} is not null.", index);
+        }
     }
 
     public void newMessage() {
-        while (used.get() == size) {
+        int n = used.get();
+        logger.debug("reserve message. used {}.", n);
+        while (n == size) {
+            logger.trace("window is full.");
             Thread.yield();
+            n = used.get();
         }
         used.incrementAndGet();
         if (tail == last) {
             base += size;
-            logger.debug("new base {}", base);
+            logger.debug("new base {}. cell {} is reserved", base, tail);
             tail = 0;
         } else {
+            logger.debug("cell {} is reserved.", tail);
             ++tail;
         }
     }
@@ -67,11 +78,13 @@ public class Window {
         }
         Object result = buffer.get(index);
         if (result == null) {
+            logger.debug("cell {} is empty", index);
             return null;
         }
         buffer.set(index, null);
         ++consumed;
         used.decrementAndGet();
+        logger.debug("global id {} of message {}", consumed, result);
         return result;
     }
 }
