@@ -54,4 +54,24 @@ public class WindowTest {
         Assert.assertNull(w.consume());
         Assert.assertEquals(0, w.used());
     }
+
+    @Test
+    public void changeBase() {
+        w.newMessage();
+        w.newMessage();
+        w.insert(1, 1);
+        w.insert(0, 0);
+        w.newMessage();
+        w.insert(2, 2);
+        Assert.assertEquals(0, w.consume());
+        Assert.assertEquals(1, w.consume());
+        w.newMessage();
+        w.insert(3, 3);
+        w.newMessage();
+        w.insert(4, 4);
+        Assert.assertEquals(2, w.consume());
+        Assert.assertEquals(3, w.consume());
+        Assert.assertEquals(4, w.consume());
+        Assert.assertEquals(0, w.used());
+    }
 }
