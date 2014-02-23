@@ -34,7 +34,7 @@ public class SyncBitMap {
         }
     }
 
-    public int[] findSetBits() throws InterruptedException {
+    public int findSetBits() throws InterruptedException {
         int map = bits.get();
         logger.debug("get map {}", map);
         if (map == 0) {
@@ -46,6 +46,10 @@ public class SyncBitMap {
             }
         }
         logger.debug("return map {}", map);
+        return map;
+    }
+
+    public int[] getCombination(int map) {
         return combinations[map];
     }
 
@@ -73,5 +77,9 @@ public class SyncBitMap {
                 break;
             }
         }
+    }
+
+    public void clearBits(int map) {
+        bits.compareAndSet(map, 0);
     }
 }

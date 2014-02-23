@@ -51,11 +51,14 @@ public class Dispatcher implements Runnable {
         Job job = new Job(input, nextMessageId++);
         window.reserveCell();
         while (true) {
-            for (int wid : freeWorkerMap.findSetBits()) {
+            int map = freeWorkerMap.findSetBits();
+            for (int wid : freeWorkerMap.getCombination(map)) {
+                logger.debug("try submit to {}", wid);
                 if (workers[wid].submit(job)) {
                     return;
                 }
             }
+            freeWorkerMap.clearBits(map);
         }
     }
 }

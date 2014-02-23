@@ -102,13 +102,12 @@ public class Window {
         if (!buffer.compareAndSet(index, result, null)) {
             logger.error("index {} changed  to {}", index, buffer.get(index));
         }
-        ++consumed;
+        logger.debug("consumed id {} of message {}.", consumed++, result);
         if (used.getAndDecrement() == size) {
             synchronized (dispatcherLock) {
                 dispatcherLock.notify();
             }
         }
-        logger.debug("global id {} of message {}.", consumed, result);
         return result;
     }
 }

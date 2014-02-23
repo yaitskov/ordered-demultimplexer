@@ -27,16 +27,16 @@ public class Worker implements Runnable {
     public void run() {
         try {
             while (true) {
+                freeWorkerMap.setBit(index);
                 synchronized (lock) {
                     while (in == null) {
-                        logger.info("in is null. sleep.");
+                        logger.info("{} in is null. sleep.", index);
                         lock.wait();
                     }
                 }
                 freeWorkerMap.clearBit(index);
                 window.insert(in.id, processor.process(in.input));
                 in = null;
-                freeWorkerMap.setBit(index);
             }
         } catch (InterruptedException e) {
             logger.info("interrupted");
