@@ -13,6 +13,11 @@
         <appender-ref ref="console" />
     </logger>
 
+    <logger name="com.github.dyaitskov.demux.queue1s.speed" additivity="false">
+        <level value="info" />
+        <appender-ref ref="console" />
+    </logger>
+
     <root>
         <priority value="warn" />
         <appender-ref ref="console" />

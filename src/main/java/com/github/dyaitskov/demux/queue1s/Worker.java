@@ -30,7 +30,7 @@ public class Worker implements Runnable {
                 freeWorkerMap.setBit(index);
                 synchronized (lock) {
                     while (in == null) {
-                        logger.info("{} in is null. sleep.", index);
+                        logger.debug("{} in is null. sleep.", index);
                         lock.wait();
                     }
                 }
