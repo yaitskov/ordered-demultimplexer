@@ -34,7 +34,7 @@ public class Window {
         }
         int index = id - base;
         if (index < 0) {
-            logger.debug("negative id {} for base {}.", index, base);
+            logger.debug("negative index {} for base {}.", index, base);
             index += size;
             if (index < 0) {
                 logger.error("insert id out of window.");
@@ -75,7 +75,7 @@ public class Window {
     public Object consume() {
         int index = consumed - base;
         if (index < 0) {
-            logger.debug("negative id {} for base {}.", index, base);
+            logger.debug("negative index {} for base {}.", index, base);
             index += size;
             if (index < 0) {
                 logger.error("remove id out of window.");
