@@ -12,7 +12,7 @@ public class ProcessorImpl implements Processor {
     public Object process(Object input) {
         Random r = new Random();
         long l = 0;
-        int m = r.nextInt((Integer) input + 10);
+        int m = r.nextInt((Integer) input * 100 + 10);
         for (int i = 0; i < m; ++i) {
             l += r.nextInt(10);
         }
