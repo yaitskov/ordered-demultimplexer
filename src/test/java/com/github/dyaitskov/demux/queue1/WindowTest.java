@@ -14,13 +14,13 @@ public class WindowTest {
     public void insertPassAhead() {
         Assert.assertEquals(0, w.used());
         Assert.assertEquals(SIZE, w.size);
-        w.newMessage();
+        w.reserveCell();
         Assert.assertEquals(1, w.used());
         w.insert(0, 0);
         Assert.assertEquals(1, w.used());
-        w.newMessage();
+        w.reserveCell();
         Assert.assertEquals(2, w.used());
-        w.newMessage();
+        w.reserveCell();
         Assert.assertEquals(3, w.used());
         w.insert(2, 2);
         Assert.assertEquals(3, w.used());
@@ -36,8 +36,8 @@ public class WindowTest {
 
     @Test
     public void consumeNull() {
-        w.newMessage();
-        w.newMessage();
+        w.reserveCell();
+        w.reserveCell();
         Assert.assertEquals(2, w.used());
         Assert.assertNull(w.consume());
         Assert.assertNull(w.consume());
@@ -57,17 +57,17 @@ public class WindowTest {
 
     @Test
     public void changeBase() {
-        w.newMessage();
-        w.newMessage();
+        w.reserveCell();
+        w.reserveCell();
         w.insert(1, 1);
         w.insert(0, 0);
-        w.newMessage();
+        w.reserveCell();
         w.insert(2, 2);
         Assert.assertEquals(0, w.consume());
         Assert.assertEquals(1, w.consume());
-        w.newMessage();
+        w.reserveCell();
         w.insert(3, 3);
-        w.newMessage();
+        w.reserveCell();
         w.insert(4, 4);
         Assert.assertEquals(2, w.consume());
         Assert.assertEquals(3, w.consume());
