@@ -16,9 +16,9 @@ import java.util.concurrent.Executors;
  */
 public class IntegrationTest {
     private static final Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
-    public static final int N_MESSAGES = 550;
-    public static final int WINDOW_SIZE = 5;
-    public static final int THREADS = 3;
+    public static final int N_MESSAGES = 950;
+    public static final int WINDOW_SIZE = 2;
+    public static final int THREADS = 5;
 
     static class SourceImpl implements Source {
         int n;
@@ -60,6 +60,9 @@ public class IntegrationTest {
                 Assert.assertTrue("lock", ++nullInLine < 1000);
                 logger.debug("null got for {}", expected);
                 continue;
+            } else {
+                logger.debug("got {}", n);
+                nullInLine = 0;
             }
             Assert.assertEquals(-expected, (int) n);
             ++expected;

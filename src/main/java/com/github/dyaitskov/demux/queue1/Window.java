@@ -29,6 +29,9 @@ public class Window {
     }
 
     public void insert(int id, Object result) {
+        if (result == null) {
+            logger.error("id {} is null", id);
+        }
         int index = id - base;
         if (index < 0) {
             logger.debug("negative id {} for base {}.", index, base);
@@ -41,50 +44,55 @@ public class Window {
             logger.debug("insert id {} base {}.", id, base);
         }
         if (buffer.compareAndSet(index, null, result)) {
-            logger.debug("inserted {} at index {}.", index, result);
+            logger.debug("inserted {} at index {}.", result, index);
         } else {
             logger.error("index {} is not null.", index);
         }
     }
 
-    public void newMessage() {
+    public boolean reserveCell() {
         int n = used.get();
         logger.debug("reserve message. used {}.", n);
         while (n == size) {
             logger.trace("window is full.");
-            Thread.yield();
-            n = used.get();
+            return false;
         }
         used.incrementAndGet();
+        if (buffer.get(tail) != null) {
+            logger.error("tail {} is not null {}", tail, buffer.get(tail));
+        }
         if (tail == last) {
             base += size;
-            logger.debug("new base {}. cell {} is reserved", base, tail);
+            logger.debug("new base {}. cell {} is reserved.", base, tail);
             tail = 0;
         } else {
             logger.debug("cell {} is reserved.", tail);
             ++tail;
         }
+        return true;
     }
 
     public Object consume() {
         int index = consumed - base;
         if (index < 0) {
-            logger.debug("negative id {} for base {}", index, base);
+            logger.debug("negative id {} for base {}.", index, base);
             index += size;
             if (index < 0) {
-                logger.error("remove id out of window");
+                logger.error("remove id out of window.");
                 return null;
             }
         }
         Object result = buffer.get(index);
         if (result == null) {
-            logger.debug("cell {} is empty", index);
+            logger.debug("cell {} is empty. base {}.", index, base);
             return null;
         }
-        buffer.set(index, null);
+        if (!buffer.compareAndSet(index, result, null)) {
+            logger.error("index {} changed  to {}", index, buffer.get(index));
+        }
         ++consumed;
         used.decrementAndGet();
-        logger.debug("global id {} of message {}", consumed, result);
+        logger.debug("global id {} of message {}.", consumed, result);
         return result;
     }
 }

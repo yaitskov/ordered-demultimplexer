@@ -1,6 +1,5 @@
 package com.github.dyaitskov.demux.queue1;
 
-import org.omg.DynamicAny._DynAnyFactoryStub;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,11 @@ public class Dispatcher implements Runnable {
 
     private void submit(Object input) {
         Job job = new Job(input, nextMessageId++);
-        window.newMessage();
+        while (!window.reserveCell()) {
+            for (int i = 0; i < workers.length; ++i) {
+                getOutAndInsert(i);
+            }
+        }
         while (job != null) {
             int i = 0;
             for (; i < workers.length; ++i) {
@@ -66,15 +69,15 @@ public class Dispatcher implements Runnable {
                     job = null;
                     break;
                 }
-                insert(i);
+                getOutAndInsert(i);
             }
             for (; i < workers.length; ++i) {
-                insert(i);
+                getOutAndInsert(i);
             }
         }
     }
 
-    private void insert(int i) {
+    private void getOutAndInsert(int i) {
         logger.trace("collect out of worker {}.", i);
         Job out = workers[i].out;
         if (out != null) {
