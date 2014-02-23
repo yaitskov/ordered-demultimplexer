@@ -15,10 +15,10 @@ public class IntegrationTest {
     public void integrate() throws InterruptedException {
         logger.info("test");
         for (Integer threads : ContiguousSet.create(
-                Range.closedOpen(1, 8),
+                Range.closedOpen(1, 9),
                 DiscreteDomain.integers())) {
             for (Integer windowSize : ContiguousSet.create(
-                    Range.closedOpen(1, 16),
+                    Range.closedOpen(1, 20),
                     DiscreteDomain.integers())) {
                 logger.info("------ threads {} ---- window {} ---",
                         threads, windowSize);
