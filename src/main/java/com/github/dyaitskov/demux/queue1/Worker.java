@@ -23,7 +23,7 @@ public class Worker implements Runnable {
                     logger.info("interruption request. break cycle.");
                     break;
                 }
-                Thread.yield();
+//                Thread.yield();
             } else {
                 try {
                     out = new Job(processor.process(in.input), in.id);
