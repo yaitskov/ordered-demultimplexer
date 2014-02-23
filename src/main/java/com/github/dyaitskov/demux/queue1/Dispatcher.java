@@ -55,12 +55,18 @@ public class Dispatcher implements Runnable {
 
     private void submit(Object input) {
         Job job = new Job(input, nextMessageId++);
-        while (!window.reserveCell()) {
+        while (!window.reserveCell() && !interrupted) {
+            interrupted |= Thread.interrupted();
+            int inserted = 0;
             for (int i = 0; i < workers.length; ++i) {
-                getOutAndInsert(i);
+                inserted += getOutAndInsert(i);
+            }
+            if (inserted == 0) {
+//                Thread.yield();
             }
         }
-        while (job != null) {
+        while (job != null && !interrupted) {
+            interrupted |= Thread.interrupted();
             int i = 0;
             for (; i < workers.length; ++i) {
                 if (workers[i].in == null) {
@@ -77,13 +83,15 @@ public class Dispatcher implements Runnable {
         }
     }
 
-    private void getOutAndInsert(int i) {
+    private int getOutAndInsert(int i) {
         logger.trace("collect out of worker {}.", i);
         Job out = workers[i].out;
         if (out != null) {
             logger.debug("worker {} finished message {}.", i, out);
             window.insert(out.id, out.input);
             workers[i].out = null;
+            return 1;
         }
+        return 0;
     }
 }
